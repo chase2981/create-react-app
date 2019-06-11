@@ -79,6 +79,9 @@ const program = new commander.Command(packageJson.name)
   .option('--use-npm')
   .option('--use-pnp')
   .option('--typescript')
+  .option('--flex-ui')
+  .option('--flex-webchat-ui')
+  .option('--scss')
   .allowUnknownOption()
   .on('--help', () => {
     console.log(`    Only ${chalk.green('<project-directory>')} is required.`);
@@ -181,6 +184,9 @@ createApp(
   program.useNpm,
   program.usePnp,
   program.typescript,
+  program.flexUi,
+  program.flexWebchatUi,
+  program.scss,
   hiddenProgram.internalTestingTemplate
 );
 
@@ -191,6 +197,9 @@ function createApp(
   useNpm,
   usePnp,
   useTypescript,
+  useFlexUi,
+  useFlexWebchatUi,
+  useScss,
   template
 ) {
   const root = path.resolve(name);
@@ -296,7 +305,10 @@ function createApp(
     template,
     useYarn,
     usePnp,
-    useTypescript
+    useTypescript,
+    useFlexUi,
+    useFlexWebchatUi,
+    useScss
   );
 }
 
@@ -380,7 +392,10 @@ function run(
   template,
   useYarn,
   usePnp,
-  useTypescript
+  useTypescript,
+  useFlexUi,
+  useFlexWebchatUi,
+  useScss
 ) {
   getInstallPackage(version, originalDirectory).then(packageToInstall => {
     const allDependencies = ['react', 'react-dom', packageToInstall];
@@ -394,6 +409,18 @@ function run(
         '@types/jest',
         'typescript'
       );
+    }
+
+    if (useFlexUi) {
+      allDependencies.push('@twilio/flex-ui', 'react-redux', 'flex-plugin');
+    }
+
+    if (useFlexWebchatUi) {
+      allDependencies.push('@twilio/flex-webchat-ui', 'react-redux');
+    }
+
+    if (useScss) {
+      allDependencies.push('node-sass');
     }
 
     console.log('Installing packages. This might take a couple of minutes.');

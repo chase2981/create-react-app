@@ -92,6 +92,10 @@ module.exports = function(
   appPackage.dependencies = appPackage.dependencies || {};
 
   const useTypeScript = appPackage.dependencies['typescript'] != null;
+  const useFlexUi = appPackage.dependencies['@twilio/flex-ui'] != null;
+  const useFlexWebchatUi =
+    appPackage.dependencies['@twilio/flex-webchat-ui'] != null;
+  const useScss = appPackage.dependencies['node-sass'] != null;
 
   // Setup the script rules
   appPackage.scripts = {
@@ -125,7 +129,21 @@ module.exports = function(
   // Copy the files for the user
   const templatePath = template
     ? path.resolve(originalDirectory, template)
-    : path.join(ownPath, useTypeScript ? 'template-typescript' : 'template');
+    : path.join(
+        ownPath,
+        useFlexUi && useScss
+          ? 'template-typescript-flex-ui-scss'
+          : useFlexUi
+          ? 'template-typescript-flex-ui'
+          : useFlexWebchatUi && useScss
+          ? 'template-typescript-flex-webchat-ui-scss'
+          : useFlexWebchatUi
+          ? 'template-typescript-flex-webchat-ui'
+          : useTypeScript
+          ? 'template-typescript'
+          : 'template'
+      );
+
   if (fs.existsSync(templatePath)) {
     fs.copySync(templatePath, appPath);
   } else {
